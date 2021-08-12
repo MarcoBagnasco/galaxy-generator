@@ -84,9 +84,7 @@ window.addEventListener('resize', () => {
  */
 // Base Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, .1, 100);
-camera.position.x = 4;
-camera.position.y = 2;
-camera.position.z = 5;
+camera.position.z = 3;
 scene.add(camera);
 
 // Controls
@@ -111,6 +109,15 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime();
 
+    // Update ParticlesMaterial
+    // particles.rotation.y = elapsedTime *.2;
+    for(let i = 0; i < count; i++)
+    {
+        const i3 = i * 3;
+        const x = particlesGeometry.attributes.position.array[i3 + 0];
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x);
+    }
+    particlesGeometry.attributes.position.needsUpdate = true;
     // Updadate Controls
     controls.update();
 
