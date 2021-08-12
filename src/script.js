@@ -29,24 +29,28 @@ const particlesGeometry = new THREE.BufferGeometry();
 const count = 20000;
 
 const positions = new Float32Array(count * 3);
+const colors = new Float32Array(count * 3);
 
 for(let i = 0; i < count * 3; i++) 
 {
     positions[i] = (Math.random() - .5) * 10;
+    colors[i] = Math.random();
 }
 
 particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 // Material
 const particlesMaterial = new THREE.PointsMaterial({
     size: .1,
     sizeAttenuation: true,
-    color: '#ff88cc',
+    // color: '#ff88cc',
     transparent: true,
     alphaMap: particleTexture,
     // alphaTest: .001
     // depthTest: false
     depthWrite: false,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
+    vertexColors: true,
 }); 
 // Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
