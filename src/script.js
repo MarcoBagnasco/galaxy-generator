@@ -26,7 +26,7 @@ const particleTexture = textureLoader.load('textures/particles/2.png');
  */
 // Geometrty
 const particlesGeometry = new THREE.BufferGeometry();
-const count = 5000;
+const count = 20000;
 
 const positions = new Float32Array(count * 3);
 
@@ -41,9 +41,13 @@ const particlesMaterial = new THREE.PointsMaterial({
     size: .1,
     sizeAttenuation: true,
     color: '#ff88cc',
-    map: particleTexture,
+    transparent: true,
+    alphaMap: particleTexture,
+    // alphaTest: .001
+    // depthTest: false
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
 }); 
-
 // Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
 
