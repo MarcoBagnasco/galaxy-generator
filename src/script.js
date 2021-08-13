@@ -16,46 +16,42 @@ const canvas = document.querySelector('canvas.webgl');
 const scene = new THREE.Scene();
 
 /**
- * Textures
+ * Galaxy
  */
-const textureLoader = new THREE.TextureLoader();
-const particleTexture = textureLoader.load('textures/particles/2.png');
+const parameters = {};
+parameters.count = 1000;
+parameters.size = .02;
 
-/**
- * Particles
- */
-// Geometrty
-const particlesGeometry = new THREE.BufferGeometry();
-const count = 20000;
-
-const positions = new Float32Array(count * 3);
-const colors = new Float32Array(count * 3);
-
-for(let i = 0; i < count * 3; i++) 
+const generateGalaxy = () =>
 {
-    positions[i] = (Math.random() - .5) * 10;
-    colors[i] = Math.random();
+    // Geometry
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(parameters.count * 3);
+
+    for(let i = 0; i < parameters.count; i++)
+    {
+        const i3 = i * 3;
+        positions[i3 + 0] = (Math.random() - .5) * 3;
+        positions[i3 + 1] = (Math.random() - .5) * 3;
+        positions[i3 + 2] = (Math.random() - .5) * 3;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    // Material
+    const material = new THREE.PointsMaterial({
+        size: parameters.size,
+        sizeAttenuation: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    })
+
+    // Points
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
 }
 
-particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-// Material
-const particlesMaterial = new THREE.PointsMaterial({
-    size: .1,
-    sizeAttenuation: true,
-    // color: '#ff88cc',
-    transparent: true,
-    alphaMap: particleTexture,
-    // alphaTest: .001
-    // depthTest: false
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    vertexColors: true,
-}); 
-// Points
-const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-
-scene.add(particles);
+generateGalaxy();
 
 /**
  *  Sizes
@@ -65,7 +61,8 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () => {
+window.addEventListener('resize', () => 
+{
     // Update Sizes
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
@@ -84,6 +81,8 @@ window.addEventListener('resize', () => {
  */
 // Base Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, .1, 100);
+camera.position.x = 3;
+camera.position.y = 3;
 camera.position.z = 3;
 scene.add(camera);
 
@@ -109,15 +108,6 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime();
 
-    // Update ParticlesMaterial
-    // particles.rotation.y = elapsedTime *.2;
-    for(let i = 0; i < count; i++)
-    {
-        const i3 = i * 3;
-        const x = particlesGeometry.attributes.position.array[i3 + 0];
-        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x);
-    }
-    particlesGeometry.attributes.position.needsUpdate = true;
     // Updadate Controls
     controls.update();
 
