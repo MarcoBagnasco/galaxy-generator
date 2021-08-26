@@ -26,7 +26,7 @@ parameters.size = .005;
 parameters.radius = 5;
 parameters.branches = 3;
 parameters.spin = 1;
-parameters.randomness = .5;
+parameters.randomness = .2;
 parameters.randomnessPower = 3;
 parameters.insideColor = '#ff6030';
 parameters.outsideColor = '#1b3984';
@@ -49,7 +49,8 @@ const generateGalaxy = () =>
     geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(parameters.count * 3);
     const colors = new Float32Array(parameters.count * 3);
-    const scales = new Float32Array(parameters.count * 1)
+    const scales = new Float32Array(parameters.count * 1);
+    const randomness = new Float32Array(parameters.count * 3);
 
     const colorInside = new THREE.Color(parameters.insideColor);
     const colorOutside = new THREE.Color(parameters.outsideColor);
@@ -64,13 +65,18 @@ const generateGalaxy = () =>
         // const spinAngle = radius * parameters.spin;
         const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2;
 
-        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < .5 ? 1 : -1) * parameters.randomness;
-        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < .5 ? 1 : -1) * parameters.randomness;
-        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < .5 ? 1 : -1) * parameters.randomness;
+        positions[i3 + 0] = Math.cos(branchAngle) * radius;
+        positions[i3 + 1] = 0 ;
+        positions[i3 + 2] = Math.sin(branchAngle) * radius;
 
-        positions[i3 + 0] = Math.cos(branchAngle) * radius + randomX;
-        positions[i3 + 1] = 0 + randomY;
-        positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ;
+        // Randomness
+        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < .5 ? 1 : -1) * parameters.randomness * radius;
+        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < .5 ? 1 : -1) * parameters.randomness * radius;
+        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < .5 ? 1 : -1) * parameters.randomness * radius;
+
+        randomness[i3 + 0] = randomX;
+        randomness[i3 + 1] = randomY;
+        randomness[i3 + 2] = randomZ;
 
         // Color
         const mixedColor = colorInside.clone();
@@ -87,6 +93,7 @@ const generateGalaxy = () =>
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
+    geometry.setAttribute('aRandomness', new THREE.BufferAttribute(randomness, 3));
 
     // Material
     // material = new THREE.PointsMaterial({
